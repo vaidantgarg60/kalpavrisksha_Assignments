@@ -3,17 +3,23 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-int get_precedence(char op) {
+typedef enum {
+    PREC_NONE = 0,
+    PREC_ADD_SUB = 1,
+    PREC_MUL_DIV = 2
+} Precedence;
+
+Precedence get_precedence(char op) {
     if (op == '*' || op == '/') {
-        return 2;
+        return PREC_MUL_DIV; 
     }
     if (op == '+' || op == '-') {
-        return 1;
+        return PREC_ADD_SUB; 
     }
-    return 0;
+    return PREC_NONE;
 }
 
-int apply_op(int a, int b, char op) {
+int apply_op(int a, int b, char op , bool error) {
     switch (op) {
         case '+': return a + b;
         case '-': return a - b;
@@ -21,7 +27,8 @@ int apply_op(int a, int b, char op) {
         case '/':
             if (b == 0) {
                 printf("Error: Division by zero.\n");
-                exit(1);
+                error = true;
+                return 0;
             }
             return a / b;
     }
@@ -34,13 +41,15 @@ int main() {
     printf("Enter expression: ");
     fgets(expression, sizeof(expression), stdin);
 
+    bool has_error = false;
+
     int values[100];
     int v_top = -1;
 
     char ops[100];
     int o_top = -1;
 
-    for (int i = 0; expression[i] != '\0'; i++) {
+    for (int i = 0; expression[i] != '\0' && !has_error; i++) {
         if (isspace(expression[i])) {
             continue;
         }
@@ -60,21 +69,32 @@ int main() {
                 int val2 = values[v_top--];
                 int val1 = values[v_top--];
                 char op = ops[o_top--];
-                values[++v_top] = apply_op(val1, val2, op);
+                values[++v_top] = apply_op(val1, val2, op, &has_error);
+                 if (has_error) break;
             }
             ops[++o_top] = expression[i];
 
         } else {
-            printf("Error: Invalid expression.\n");
-            return 1;
+            if (expression[i] != '\n') {
+                 printf("Error: Invalid character in expression: %c\n", expression[i]);
+                 has_error = true; 
+            }
         }
     }
 
-    while (o_top != -1) {
-        int val2 = values[v_top--];
-        int val1 = values[v_top--];
-        char op = ops[o_top--];
-        values[++v_top] = apply_op(val1, val2, op);
+     if (!has_error) {
+        while (o_top != -1) {
+            int val2 = values[v_top--];
+            int val1 = values[v_top--];
+            char op = ops[o_top--];
+
+            values[++v_top] = apply_op(val1, val2, op, &has_error);
+            if (has_error) break;
+        }
+    }
+    
+    if (has_error) {
+        return 1; 
     }
 
     if (v_top != 0) {
