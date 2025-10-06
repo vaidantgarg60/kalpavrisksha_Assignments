@@ -2,6 +2,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 typedef enum {
     PREC_NONE = 0,
@@ -11,15 +12,15 @@ typedef enum {
 
 Precedence get_precedence(char op) {
     if (op == '*' || op == '/') {
-        return PREC_MUL_DIV; 
+        return PREC_MUL_DIV;
     }
     if (op == '+' || op == '-') {
-        return PREC_ADD_SUB; 
+        return PREC_ADD_SUB;
     }
     return PREC_NONE;
 }
 
-int apply_op(int a, int b, char op , bool error) {
+int apply_op(int a, int b, char op, bool *error) {
     switch (op) {
         case '+': return a + b;
         case '-': return a - b;
@@ -27,7 +28,7 @@ int apply_op(int a, int b, char op , bool error) {
         case '/':
             if (b == 0) {
                 printf("Error: Division by zero.\n");
-                error = true;
+                *error = true;
                 return 0;
             }
             return a / b;
@@ -40,14 +41,14 @@ int main() {
 
     printf("Enter expression: ");
     fgets(expression, sizeof(expression), stdin);
-
+    
     bool has_error = false;
 
     int values[100];
-    int v_top = -1;
+    int values_top = -1;
 
     char ops[100];
-    int o_top = -1;
+    int ops_top = -1;
 
     for (int i = 0; expression[i] != '\0' && !has_error; i++) {
         if (isspace((unsigned char)expression[i])) {
@@ -62,43 +63,45 @@ int main() {
             }
             i--;
             
-            values[++v_top] = num;
+            values[++values_top] = num;
 
         } else if (strchr("+-*/", expression[i])) {
-            while (o_top != -1 && get_precedence(ops[o_top]) >= get_precedence(expression[i])) {
-                int val2 = values[v_top--];
-                int val1 = values[v_top--];
-                char op = ops[o_top--];
-                values[++v_top] = apply_op(val1, val2, op, &has_error);
-                 if (has_error) break;
+            while (ops_top != -1 && get_precedence(ops[ops_top]) >= get_precedence(expression[i])) {
+                int val2 = values[values_top--];
+                int val1 = values[values_top--];
+                char op = ops[ops_top--];
+                
+                values[++values_top] = apply_op(val1, val2, op, &has_error);
+                
+                if (has_error) break;
             }
-            ops[++o_top] = expression[i];
+            ops[++ops_top] = expression[i];
 
         } else {
             if (expression[i] != '\n') {
                  printf("Error: Invalid character in expression: %c\n", expression[i]);
-                 has_error = true; 
+                 has_error = true;
             }
         }
     }
+    
+    if (!has_error) {
+        while (ops_top != -1) {
+            int val2 = values[values_top--];
+            int val1 = values[values_top--];
+            char op = ops[ops_top--];
 
-     if (!has_error) {
-        while (o_top != -1) {
-            int val2 = values[v_top--];
-            int val1 = values[v_top--];
-            char op = ops[o_top--];
-
-            values[++v_top] = apply_op(val1, val2, op, &has_error);
+            values[++values_top] = apply_op(val1, val2, op, &has_error);
             if (has_error) break;
         }
     }
     
     if (has_error) {
-        return 1; 
+        return 1;
     }
 
-    if (v_top != 0) {
-        printf("Error: Invalid expression.\n");
+    if (values_top != 0) {
+        printf("Error: Invalid expression format.\n");
         return 1;
     }
 
