@@ -50,15 +50,15 @@ int main() {
     int o_top = -1;
 
     for (int i = 0; expression[i] != '\0' && !has_error; i++) {
-        if (isspace(expression[i])) {
+        if (isspace((unsigned char)expression[i])) {
             continue;
         }
 
-        if (isdigit(expression[i])) {
+        if (isdigit((unsigned char)expression[i])) {
             int num = 0;
-                while (isdigit(expression[i])) {
-                    num = (num * 10) + (expression[i] - '0');
-                    i++;
+            while (isdigit((unsigned char)expression[i])) {
+                num = (num * 10) + (expression[i] - '0');
+                i++;
             }
             i--;
             
