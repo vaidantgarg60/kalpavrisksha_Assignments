@@ -74,9 +74,7 @@ void applySmoothingFilter(int *ptr, int n)
 {
     int *prevRow = (int *)malloc(n * sizeof(int));
     int *currRow = (int *)malloc(n * sizeof(int));
-
     
-
     for (int i = 0; i < n; i++)
     {
         for (int j = 0; j < n; j++)
@@ -131,8 +129,6 @@ int main(void)
     int *ptr = &matrix[0][0];
 
     srand((unsigned)time(NULL));
-    // For Generate random matrix with values 0-255(just uncomment these)
-
     generateRandomMatrix(ptr, n, MIN_RANDOM_SIZE, MAX_RANDOM_SIZE);
 
     //For a user-input matrix 
@@ -151,3 +147,4 @@ int main(void)
 
     return 0;
 }
+
