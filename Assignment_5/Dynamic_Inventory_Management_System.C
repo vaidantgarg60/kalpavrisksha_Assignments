@@ -30,6 +30,7 @@ void addProduct(Product **inventory, int *totalProducts) {
 
     printf("Product added successfully!\n");
 }
+
 void viewAllProducts(Product *inventory, int totalProducts) {
     if (totalProducts == 0) {
         printf("No products available.\n");
@@ -42,6 +43,7 @@ void viewAllProducts(Product *inventory, int totalProducts) {
                inventory[i].productPrice, inventory[i].productQuantity);
     }
 }
+
 void updateProductQuantity(Product *inventory, int totalProducts) {
     int productId;
     printf("Enter Product ID to update quantity: ");
@@ -82,7 +84,7 @@ void searchProductByName(Product *inventory, int totalProducts) {
     bool productFound = false;
     printf("Products Found:\n");
     for (int i = 0; i < totalProducts; i++) {
-        if (strstr(inventory[i].productName, nameSearch) != NULL) { // strcmp matches whole strinf not partt of it
+        if (strstr(inventory[i].productName, nameSearch) != NULL) { 
             printf("Product ID: %d | Name: %s | Price: %f | Quantity: %d\n",
                    inventory[i].productId,inventory[i].productName,
                    inventory[i].productPrice, inventory[i].productQuantity);
@@ -145,12 +147,11 @@ void deleteProductById(Product **inventory, int *totalProducts) {
 }
 
 int main() {
-    int Ini_ProductCount;
+    int initialProductCount;
     printf("Enter initial number of products: ");
-    scanf("%d", &Ini_ProductCount);
-    Product *inventory = (Product *)calloc(Ini_ProductCount, sizeof(Product));// i dont used malloc here becoz it does not initialize them to 0 
-
-    for (int i = 0; i < Ini_ProductCount; i++) {
+    scanf("%d", &initialProductCount);
+    Product *inventory = (Product *)calloc(initialProductCount, sizeof(Product));
+    for (int i = 0; i < initialProductCount; i++) {
         printf("\nEnter details for product %d:\n", i + 1);
         printf("Product ID:");
          scanf("%d", &inventory[i].productId);
@@ -181,25 +182,25 @@ int main() {
 
         switch (userChoice) {
             case 1:
-                addProduct(&inventory, &Ini_ProductCount);
+                addProduct(&inventory, &initialProductCount);
                 break;
             case 2:
-                viewAllProducts(inventory, Ini_ProductCount);
+                viewAllProducts(inventory,initialProductCount);
                 break;
             case 3:
-                updateProductQuantity(inventory, Ini_ProductCount);
+                updateProductQuantity(inventory,initialProductCount);
                 break;
             case 4:
-                searchProductById(inventory, Ini_ProductCount);
+                searchProductById(inventory, initialProductCount);
                 break;
             case 5:
-                searchProductByName(inventory, Ini_ProductCount);
+                searchProductByName(inventory, initialProductCount);
                 break;
             case 6:
-                searchProductByPriceRange(inventory, Ini_ProductCount);
+                searchProductByPriceRange(inventory, initialProductCount);
                 break;
             case 7:
-                deleteProductById(&inventory, &Ini_ProductCount);
+                deleteProductById(&inventory, &initialProductCount);
                 break;
             case 8:
                 printf("Memory released successfully. Exiting program...\n");
@@ -209,7 +210,7 @@ int main() {
         }
 
     } while (userChoice != 8);
-// i used do while loop here as i want to show menu once always so that user selexct options till termination in case 8
     free(inventory);
     return 0;
 }
+
