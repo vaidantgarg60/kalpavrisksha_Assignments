@@ -4,8 +4,6 @@
 #include <math.h>
 #include "Players_data.h"
 
-
-
 typedef struct PlayerNode {
     int playerId;
     char name[50];
@@ -119,8 +117,6 @@ Team* searchTeamById(int id) {
     }
     return NULL;
 }
-
-
 
 
 void addPlayer() {
@@ -335,4 +331,5 @@ int main() {
     } while (choice != 6);
 
     return 0;
+
 }
